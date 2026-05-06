@@ -1,74 +1,86 @@
-# Car Rental Web Application
 
-A PHP-based car rental information system containerized with Docker.
+# Autorendi veebirakendus
 
-## Quick Start
+Dockeriga konteineriseeritud PHP-põhine autorendi infosüsteem.
 
-### Using Docker Compose (Recommended)
+## Kiirjuhend
+
+### Docker Compose'i kasutamine (soovitatav)
+
+Konteinerite käivitamiseks sisesta käsureale:
 
 ```bash
 docker compose up -d
 ```
 
-Access the application:
-- **Web App:** http://localhost/
+Juurdepääs rakendustele:
+- **Veebirakendus:** http://localhost/
 - **phpMyAdmin:** http://localhost:8080/
 
-### Credentials
+---
+
+## Autentimisandmed
 
 **phpMyAdmin:**
-- Username: `root`
-- Password: `docker123`
+- **Kasutajanimi:** `root`
+- **Parool:** `docker123`
 
-**Database User:**
-- Username: `hannes`
-- Password: `Passw0rd`
+**Andmebaasi kasutaja:**
+- **Kasutajanimi:** `hannes`
+- **Parool:** `Passw0rd`
 
-## Services
+---
 
-- **PHP/Apache**: Web server (port 80)
-- **MariaDB**: Database (port 3306)
-- **phpMyAdmin**: Database management (port 8080)
+## Teenused ja Funktsioonid
 
-## Features
+### Süsteemi komponendid:
+* **PHP/Apache**: Veebiserver, mis töötab pordis 80.
+* **MariaDB**: Relatsiooniline andmebaas pordis 3306.
+* **phpMyAdmin**: Veebipõhine liides andmebaasi haldamiseks.
 
-- Car listing with sorting and pagination
-- User registration and authentication
-- Car rental booking system
-- Admin dashboard
-- Responsive Bootstrap UI
+### Rakenduse võimalused:
+* Autode nimekiri koos sorteerimise ja lehekülgedeks jaotamisega.
+* Kasutajate registreerimine ja turvaline sisselogimine.
+* Autorendi broneerimissüsteem.
+* Administraatori töölaud andmete haldamiseks.
+* Kaasaegne ja kohanduv Bootstrap kasutajaliides.
 
-## Project Structure
+---
 
-```
+## Projekti struktuur
+
+```text
 car_rent/
-├── Dockerfile           # PHP/Apache container definition
-├── docker-compose.yml   # Multi-container orchestration
-├── .dockerignore        # Docker build exclusions
-├── config.php           # Database configuration
-├── index.php            # Home page with car listing
-├── register.php         # User registration
-├── admin/               # Admin panel
-├── db/                  # Database dumps
-└── header.php           # Shared header template
+├── Dockerfile           # PHP/Apache konteineri definitsioon
+├── docker-compose.yml   # Mitme konteineri orkestreerimine
+├── .dockerignore        # Dockeri ehitusest välistatud failid
+├── config.php           # Andmebaasi konfiguratsioon
+├── index.php            # Avaleht koos autode nimekirjaga
+├── register.php         # Kasutaja registreerimine
+├── admin/               # Administraatori paneel
+├── db/                  # Andmebaasi tõmmised
+└── header.php           # Ühine päise mall
 ```
 
-## Development
+---
 
-Edit PHP files in VS Code — changes sync automatically to the container via bind mount.
+## Arendus ja seiskamine
 
-## Stop Containers
+**Arendustöö:**
+Muuda PHP-faile otse VS Code-is — tänu *bind mount* ühendusele sünroonitakse muudatused automaatselt konteinerisse.
 
+**Konteinerite peatamine:**
 ```bash
 docker compose down
 ```
 
-Remove data (reset database):
-
+**Andmete eemaldamine (andmebaasi algseadistamine):**
 ```bash
 docker compose down -v
 ```
 
-## License
+---
 
-Educational project.
+## Litsents
+Õppeprojekt.
+```
