@@ -46,6 +46,14 @@ docker compose up -d
 *   **Kasutajanimi:** `hannes`
 *   **Parool:** `Passw0rd`
 
+### 👤 Veebilehe kasutaja:
+*   **Kasutajanimi:** `kasutaja@kasutaja.ee`
+*   **Parool:** `Passw0rd`
+
+### 👤 Veebilehe administraator:
+*   **Kasutajanimi:** `admin@admin.ee`
+*   **Parool:** `Passw0rd`
+
 ---
 
 ## 📂 Projekti struktuur
