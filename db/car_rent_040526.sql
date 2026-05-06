@@ -2183,8 +2183,8 @@ INSERT INTO `users` (`id`, `role`, `first_name`, `last_name`, `email`, `phone`, 
 (18, 'kasutaja', 'Vilma', 'Edinburough', 'vedinburoughh@lulu.com', '330-502-9701', '$2a$04$kbj93fQ6UHQ47ywZmyafPuOrreOuNnxjxg9iw8PVHSwkkf0Khhb/.', '2016-08-16 18:00:04'),
 (19, 'kasutaja', 'Fanni', 'Lavender', 'flavenderi@biglobe.ne.jp', '489-202-9227', '$2a$04$5KGYwno.0qDc9lRVHc0xR.jhykDsqvLdbPR4aTibcZmRBT6zCAp3C', '2023-05-08 17:49:27'),
 (20, 'kasutaja', 'Lev', 'Martyntsev', 'lmartyntsevj@live.com', '980-657-2790', '$2a$04$rQxSeuF/kdAhvPRbNiJ4iO0ABvx7H8NCaGLS0/huWvLd6JgMM11W.', '2026-05-31 18:27:54'),
-(21, 'administraator', 'Hannes', 'Admin', 'hannes@admin.ee', '123456', '$2y$10$q.5GWfu2utGpGrbMOpxnbuR1huQ8Ql3OQDIlZGuvXS5b.u14sJqlW', '2026-05-04 12:59:02'),
-(22, 'kasutaja', 'Mampel', 'Kuku', 'mampel@mampel.ee', '1223455', '$2y$10$0PZYk/QqF0nlnKwzk9i5qeZCaTprVr6OcRapZq.n0PV4azugPAAou', '2026-05-04 13:28:58');
+(21, 'administraator', 'admin', 'admin', 'admin@admin.ee', '123456', '$2y$10$q.5GWfu2utGpGrbMOpxnbuR1huQ8Ql3OQDIlZGuvXS5b.u14sJqlW', '2026-05-04 12:59:02'),
+(22, 'kasutaja', 'kasutaja', 'kasutaja', 'kasutaja@kasutaja.ee', '1223455', '$2y$10$0PZYk/QqF0nlnKwzk9i5qeZCaTprVr6OcRapZq.n0PV4azugPAAou', '2026-05-04 13:28:58');
 
 --
 -- Indeksid tõmmistatud tabelitele
