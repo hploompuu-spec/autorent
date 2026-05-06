@@ -1,70 +1,127 @@
-<?php include('../config.php'); ?>
-<?php include('../header.php'); ?>
-<?php include('admin_check.php'); ?>
+<?php 
+include('../config.php'); 
+include('admin_check.php');
 
-<?php
-    if(!empty($_GET)){
-       $mark = $_GET['mark'];
-       $model = $_GET['model'];
-       $engine = $_GET['engine'];
-       $fuel = $_GET['fuel'];
-       $price = $_GET['price'];
+$upload_dir = '../uploads/';
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+}
 
-       $year = $_GET['year'];
-       $transmission = $_GET['transmission'];
-       $seats = $_GET['seats'];
-       $description = $_GET['description'];
-       $status = $_GET['status'];
-
-
-       $sql = "INSERT INTO cars (mark, model, engine, fuel, price, year, transmission, seats, description, status) VALUES ('".$mark."', '".$model."', '".$engine."', '".$fuel."', '".$price."', '".$year."', '".$transmission."', '".$seats."', '".$description."', '".$status."')";
-
-       $valjund = mysqli_query($yhendus, $sql); 
-       $tulemus = mysqli_affected_rows($yhendus);
-        if ($tulemus == 1) {
-            header("Location: index.php?msg=lisatud");
-        } else {
-            echo "Kirjet ei lisatud";
-        }
-
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+    $mark = mysqli_real_escape_string($yhendus, $_POST['mark']);
+    $model = mysqli_real_escape_string($yhendus, $_POST['model']);
+    $engine = mysqli_real_escape_string($yhendus, $_POST['engine']);
+    
+    // Validate fuel value
+    $allowed_fuel = ['bensiin', 'diisel', 'gaas', 'elekter', 'hübriid'];
+    $fuel = isset($_POST['fuel']) && in_array($_POST['fuel'], $allowed_fuel) ? $_POST['fuel'] : '';
+    
+    $price = (int)$_POST['price'];
+    $year = (int)$_POST['year'];
+    
+    // Validate transmission value
+    $allowed_transmission = ['manuaalne', 'automaat', 'poolautomaat'];
+    $transmission = isset($_POST['transmission']) && in_array($_POST['transmission'], $allowed_transmission) ? $_POST['transmission'] : '';
+    
+    $seats = (int)$_POST['seats'];
+    $description = mysqli_real_escape_string($yhendus, $_POST['description']);
+    $status = mysqli_real_escape_string($yhendus, $_POST['status']);
+    
+    // Validate required fields
+    if (empty($fuel) || empty($transmission)) {
+        echo '<div class="alert alert-danger">Palun vali kehtiv kütus ja käigukast.</div>';
+        return;
     }
+    
+    // Handle image upload
+    $image_path = 'http://dummyimage.com/200x150/cccccc/000000.png&text=no+img'; // default placeholder
+    
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $file_tmp = $_FILES['image']['tmp_name'];
+        $file_name = basename($_FILES['image']['name']);
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        
+        // Allowed image extensions
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        
+        if (in_array($file_ext, $allowed_ext)) {
+            // Generate unique filename
+            $new_filename = 'car_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
+            $upload_path = $upload_dir . $new_filename;
+            
+            if (move_uploaded_file($file_tmp, $upload_path)) {
+                $image_path = '/uploads/' . $new_filename;
+            }
+        }
+    }
+    
+    $sql = "INSERT INTO cars (mark, model, engine, fuel, price, image, year, transmission, seats, description, status) 
+            VALUES ('".$mark."', '".$model."', '".$engine."', '".$fuel."', '".$price."', '".$image_path."', '".$year."', '".$transmission."', '".$seats."', '".$description."', '".$status."')";
+
+    $valjund = mysqli_query($yhendus, $sql); 
+    $tulemus = mysqli_affected_rows($yhendus);
+    
+    if ($tulemus == 1) {
+        header("Location: index.php?msg=lisatud");
+        exit();
+    } else {
+        echo "Kirjet ei lisatud: " . mysqli_error($yhendus);
+    }
+}
 ?>
+<?php include('../header.php'); ?>
 
 <!-- sisu -->
 <div class="container">
     <h2>Auto lisamine</h2>
-    <form action="lisa.php" method="get">
+    <form action="lisa.php" method="post" enctype="multipart/form-data">
         <div class="row g-4">
             <div class="col-sm-6">
                 <label for="mark" class="form-label">Mark</label>
-                <input type="text" class="form-control" id="mark" name="mark" value="test">
+                <input type="text" class="form-control" id="mark" name="mark" required>
                 <label for="model" class="form-label">Model</label>
-                <input type="text" class="form-control" id="model" name="model" value="test">
+                <input type="text" class="form-control" id="model" name="model" required>
                 <label for="engine" class="form-label">Mootor</label>
-                <input type="text" class="form-control" id="engine" name="engine" value="test">
+                <input type="text" class="form-control" id="engine" name="engine" required>
                 <label for="fuel" class="form-label">Kütus</label>
-                <input type="text" class="form-control" id="fuel" name="fuel" value="test">
+                <select class="form-control" id="fuel" name="fuel" required>
+                    <option value="">Vali kütus</option>
+                    <option value="bensiin">Bensiin</option>
+                    <option value="diisel">Diisel</option>
+                    <option value="gaas">Gaas</option>
+                    <option value="elekter">Elekter</option>
+                    <option value="hübriid">Hübriid</option>
+                </select>
                 <label for="price" class="form-label">Hind</label>
-                <input type="number" class="form-control" id="price" name="price" value="123">
+                <input type="number" class="form-control" id="price" name="price" required>
             </div>
             <div class="col-sm-6">
                 <label for="year" class="form-label">Aasta</label>
-                <input type="number" class="form-control" id="year" name="year" value="2000">
+                <input type="number" class="form-control" id="year" name="year" required>
                 <label for="transmission" class="form-label">Käigukast</label>
-                <input type="text" class="form-control" id="transmission" name="transmission" value="automaat">
+                <select class="form-control" id="transmission" name="transmission" required>
+                    <option value="">Vali käigukast</option>
+                    <option value="manuaalne">Manuaalne</option>
+                    <option value="automaat">Automaat</option>
+                    <option value="poolautomaat">Poolautomaat</option>
+                </select>
                 <label for="seats" class="form-label">Istmete arv</label>
-                <input type="number" class="form-control" id="seats" name="seats" value="5">
+                <input type="number" class="form-control" id="seats" name="seats" required>
                 <label for="description" class="form-label">Muu info</label>
-                <input type="text" class="form-control" id="description" name="description" value="test">
+                <input type="text" class="form-control" id="description" name="description">
                 <label for="status" class="form-label">Olek</label>
-                <input type="text" class="form-control" id="status" name="status" value="vaba">
+                <select class="form-control" id="status" name="status" required>
+                    <option value="vaba">Vaba</option>
+                    <option value="broneeritud">Broneeritud</option>
+                    <option value="rendidud">Rendidud</option>
+                    <option value="hoolduses">Hoolduses</option>
+                </select>
+                <label for="image" class="form-label">Pilt (JPG, PNG, GIF, WebP)</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
             </div>
             <input type="submit" value="Salvesta" class="btn btn-success">
         </div>
     </form>
-   
-
 </div>
 <!-- /sisu -->
 

@@ -16,7 +16,9 @@
     $errors = [];
     $start_date = '';
     $end_date = '';
+    $lisakindlustus = 'ei';
     $reserved_periods = [];
+    $today = date('Y-m-d');
     $reservations_query = "SELECT start_date, end_date, status FROM reservations WHERE car_id = $id ORDER BY start_date DESC";
     $reservations_result = mysqli_query($yhendus, $reservations_query);
     while ($row = mysqli_fetch_assoc($reservations_result)) {
@@ -26,6 +28,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_SESSION['tuvastamine'])) {
         $start_date = $_POST['start_date'] ?? '';
         $end_date = $_POST['end_date'] ?? '';
+        $lisakindlustus = $_POST['lisakindlustus'] ?? 'ei';
         $start_invalid = false;
         $end_invalid = false;
 
@@ -36,6 +39,15 @@
         if ($end_date === '') {
             $errors[] = 'Lõppkuupäev on kohustuslik.';
             $end_invalid = true;
+        }
+        if (!in_array($lisakindlustus, ['jah', 'ei'], true)) {
+            $lisakindlustus = 'ei';
+        }
+        
+        // Check if user is not admin and tries to book in the past
+        if ($_SESSION['role'] !== 'administraator' && $start_date < $today) {
+            $errors[] = 'Alguskuupäev ei saa olla minevikus.';
+            $start_invalid = true;
         }
 
         if (empty($errors)) {
@@ -61,13 +73,26 @@
             $days = $start->diff($end)->days + 1;
             $total_price = $rida['price'] * $days;
 
+            // Ensure the lisakindlustus column exists before inserting
+            $column_check = mysqli_query($yhendus, "SHOW COLUMNS FROM reservations LIKE 'lisakindlustus'");
+            if (mysqli_num_rows($column_check) === 0) {
+                // Check if old column name exists and rename it
+                $old_column_check = mysqli_query($yhendus, "SHOW COLUMNS FROM reservations LIKE 'lisakindmustus'");
+                if (mysqli_num_rows($old_column_check) > 0) {
+                    mysqli_query($yhendus, "ALTER TABLE reservations CHANGE COLUMN lisakindmustus lisakindlustus ENUM('jah','ei') NOT NULL DEFAULT 'ei'");
+                } else {
+                    mysqli_query($yhendus, "ALTER TABLE reservations ADD COLUMN lisakindlustus ENUM('jah','ei') NOT NULL DEFAULT 'ei'");
+                }
+            }
+
             $id_query = "SELECT MAX(id) as max_id FROM reservations";
             $id_result = mysqli_query($yhendus, $id_query);
             $id_row = mysqli_fetch_assoc($id_result);
             $next_id = ($id_row['max_id'] ?? 0) + 1;
 
             $user_id = $_SESSION['user_id'];
-            $insert = "INSERT INTO reservations (id, user_id, car_id, start_date, end_date, total_price, status, created_at) VALUES ($next_id, $user_id, $id, '$start_date', '$end_date', $total_price, 'broneeritud', NOW())";
+            $lisakindlustus = mysqli_real_escape_string($yhendus, $lisakindlustus);
+            $insert = "INSERT INTO reservations (id, user_id, car_id, start_date, end_date, total_price, status, lisakindlustus, created_at) VALUES ($next_id, $user_id, $id, '$start_date', '$end_date', $total_price, 'broneeritud', '$lisakindlustus', NOW())";
             if (mysqli_query($yhendus, $insert)) {
                 $success_message = 'Auto edukalt renditud!';
                 $reserved_periods[] = ['start_date' => $start_date, 'end_date' => $end_date, 'status' => 'broneeritud'];
@@ -133,17 +158,24 @@
                 <form method="post">
                     <div class="mb-3">
                         <label for="start_date" class="form-label">Alguskuupäev</label>
-                        <input type="date" class="form-control <?php echo !empty($start_invalid) ? 'is-invalid' : ''; ?>" id="start_date" name="start_date" value="<?php echo htmlspecialchars($start_date); ?>" required>
+                        <input type="date" class="form-control <?php echo !empty($start_invalid) ? 'is-invalid' : ''; ?>" id="start_date" name="start_date" value="<?php echo htmlspecialchars($start_date); ?>" <?php echo ($_SESSION['role'] !== 'administraator' ? 'min="' . $today . '"' : ''); ?> required>
                         <?php if (!empty($start_invalid)): ?>
                             <div class="invalid-feedback">Palun sisesta korrektne alguskuupäev.</div>
                         <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="end_date" class="form-label">Lõppkuupäev</label>
-                        <input type="date" class="form-control <?php echo !empty($end_invalid) ? 'is-invalid' : ''; ?>" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>" required>
+                        <input type="date" class="form-control <?php echo !empty($end_invalid) ? 'is-invalid' : ''; ?>" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>" <?php echo ($_SESSION['role'] !== 'administraator' ? 'min="' . $today . '"' : ''); ?> required>
                         <?php if (!empty($end_invalid)): ?>
                             <div class="invalid-feedback">Palun sisesta korrektne lõppkuupäev.</div>
                         <?php endif; ?>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lisakindlustus" class="form-label">Lisakindlustus</label>
+                        <select class="form-control" id="lisakindlustus" name="lisakindlustus" required>
+                            <option value="ei" <?php echo ($lisakindlustus === 'ei') ? 'selected' : ''; ?>>Ei</option>
+                            <option value="jah" <?php echo ($lisakindlustus === 'jah') ? 'selected' : ''; ?>>Jah</option>
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-dark w-100">Rendi auto</button>
                 </form>

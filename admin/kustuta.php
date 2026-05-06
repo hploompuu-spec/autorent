@@ -6,10 +6,11 @@
         $paring = "DELETE FROM cars WHERE id=$id";
         $valjund = mysqli_query($yhendus, $paring);
         if ($valjund) {
-            echo "Kustutatud";
-            header("Location: index.php");
+            header("Location: index.php?msg=kustutatud");
+            exit();
         } else {
-            echo "Urror";
+            header("Location: index.php?msg=error");
+            exit();
         }
     }
 

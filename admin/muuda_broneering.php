@@ -1,7 +1,11 @@
-<?php include('../config.php'); ?>
-<?php include('../header.php'); ?>
-
 <?php
+// Start session and include config
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+include('../config.php');
+
+// Check authentication
 if (!isset($_SESSION['tuvastamine'])) {
     header('Location: ../index.php');
     exit();
@@ -19,12 +23,12 @@ $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 
 if ($role === 'administraator') {
-    $paring = "SELECT r.id, r.car_id, r.start_date, r.end_date, r.total_price, r.status, r.user_id, c.mark, c.model, c.price
+    $paring = "SELECT r.id, r.car_id, r.start_date, r.end_date, r.total_price, r.status, r.user_id, r.lisakindlustus, c.mark, c.model, c.price
                FROM reservations r
                JOIN cars c ON r.car_id = c.id
                WHERE r.id = $reservation_id";
 } else {
-    $paring = "SELECT r.id, r.car_id, r.start_date, r.end_date, r.total_price, r.status, r.user_id, c.mark, c.model, c.price
+    $paring = "SELECT r.id, r.car_id, r.start_date, r.end_date, r.total_price, r.status, r.user_id, r.lisakindlustus, c.mark, c.model, c.price
                FROM reservations r
                JOIN cars c ON r.car_id = c.id
                WHERE r.id = $reservation_id AND r.user_id = $user_id";
@@ -40,15 +44,22 @@ if (mysqli_num_rows($valjund) === 0) {
 $reservation = mysqli_fetch_assoc($valjund);
 
 // Handle form submission
+$error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
-    $status = $_POST['status'];
+    $lisakindlustus = $_POST['lisakindlustus'] ?? 'ei';
+    $status = $_POST['status'] ?? $reservation['status'];
 
     // Validate dates
     if (strtotime($end_date) <= strtotime($start_date)) {
         $error = "Lõppkuupäev peab olema pärast alguskuupäeva!";
     } else {
+        // Validate insurance value
+        if (!in_array($lisakindlustus, ['jah', 'ei'], true)) {
+            $lisakindlustus = 'ei';
+        }
+
         // Calculate new total price
         $start = strtotime($start_date);
         $end = strtotime($end_date);
@@ -57,13 +68,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $start_date = mysqli_real_escape_string($yhendus, $start_date);
         $end_date = mysqli_real_escape_string($yhendus, $end_date);
+        $lisakindlustus = mysqli_real_escape_string($yhendus, $lisakindlustus);
         $status = mysqli_real_escape_string($yhendus, $status);
 
         if ($role === 'administraator') {
-            $update_paring = "UPDATE reservations SET start_date = '$start_date', end_date = '$end_date', status = '$status', total_price = '$total_price' WHERE id = $reservation_id";
+            $update_paring = "UPDATE reservations SET start_date = '$start_date', end_date = '$end_date', lisakindlustus = '$lisakindlustus', status = '$status', total_price = '$total_price' WHERE id = $reservation_id";
         } else {
-            // Regular users can only change dates, not status
-            $update_paring = "UPDATE reservations SET start_date = '$start_date', end_date = '$end_date', total_price = '$total_price' WHERE id = $reservation_id AND user_id = $user_id";
+            // Regular users can only change dates and insurance, not status
+            $update_paring = "UPDATE reservations SET start_date = '$start_date', end_date = '$end_date', lisakindlustus = '$lisakindlustus', total_price = '$total_price' WHERE id = $reservation_id AND user_id = $user_id";
         }
 
         $result = mysqli_query($yhendus, $update_paring);
@@ -76,6 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// All checks passed, now include header
+include('../header.php');
 ?>
 
 <!-- sisu -->
@@ -115,14 +130,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
+            <div class="mb-3">
+                <label for="lisakindlustus" class="form-label">Lisakindlustus</label>
+                <select class="form-select" id="lisakindlustus" name="lisakindlustus" required>
+                    <option value="ei" <?php echo ($reservation['lisakindlustus'] === 'ei') ? 'selected' : ''; ?>>Ei</option>
+                    <option value="jah" <?php echo ($reservation['lisakindlustus'] === 'jah') ? 'selected' : ''; ?>>Jah</option>
+                </select>
+            </div>
+
             <?php if ($role === 'administraator'): ?>
             <div class="mb-3">
                 <label for="status" class="form-label">Staatus</label>
                 <select class="form-select" id="status" name="status" required>
-                    <option value="confirmed" <?php echo ($reservation['status'] === 'confirmed') ? 'selected' : ''; ?>>Kinnitatud</option>
-                    <option value="pending" <?php echo ($reservation['status'] === 'pending') ? 'selected' : ''; ?>>Ootel</option>
-                    <option value="cancelled" <?php echo ($reservation['status'] === 'cancelled') ? 'selected' : ''; ?>>Tühistatud</option>
-                    <option value="completed" <?php echo ($reservation['status'] === 'completed') ? 'selected' : ''; ?>>Lõpetatud</option>
+                    <option value="vaba" <?php echo ($reservation['status'] === 'vaba') ? 'selected' : ''; ?>>Vaba</option>
+                    <option value="broneeritud" <?php echo ($reservation['status'] === 'broneeritud') ? 'selected' : ''; ?>>Broneeritud</option>
+                    <option value="renditud" <?php echo ($reservation['status'] === 'renditud') ? 'selected' : ''; ?>>Renditud</option>
+                    <option value="hoolduses" <?php echo ($reservation['status'] === 'hoolduses') ? 'selected' : ''; ?>>Hoolduses</option>
                 </select>
             </div>
             <?php else: ?>

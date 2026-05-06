@@ -104,21 +104,30 @@ if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') 
             // var_dump($rida);                       //kuvan testvastuse
     ?>
     <?php
-            $imgSrc = $rida["image"];
-            if (!preg_match('/^https?:\/\//', $imgSrc) && strpos($imgSrc, '/') === 0) {
-                $imgSrc = '/car_rent' . $imgSrc;
-            }
+            $imgSrc = !empty($rida["image"]) ? $rida["image"] : '';
             $placeholder = 'https://dummyimage.com/50x50/cccccc/000000.png&text=no+img';
-            if (!preg_match('/^https?:\/\//', $imgSrc)) {
-                $localPath = $_SERVER['DOCUMENT_ROOT'] . str_replace('/', DIRECTORY_SEPARATOR, $imgSrc);
-                if (!file_exists($localPath)) {
+            
+            // If empty or placeholder is needed, use default
+            if (empty($imgSrc)) {
+                $imgSrc = $placeholder;
+            } else if (!preg_match('/^https?:\/\//', $imgSrc)) {
+                // Not a full URL, try to construct local path
+                // Assume images are stored relative to app root
+                $testPath = '../' . ltrim($imgSrc, '/');
+                if (!file_exists($testPath)) {
+                    // Try with /uploads prefix
+                    $testPath = '../uploads/' . basename($imgSrc);
+                }
+                if (file_exists($testPath)) {
+                    $imgSrc = $testPath;
+                } else {
                     $imgSrc = $placeholder;
                 }
             }
     ?>
     <tr>
       <th scope="row"><?php echo $rida["id"]; ?></th>
-      <td><img src="<?php echo $imgSrc; ?>" width="50" alt="<?php echo htmlspecialchars($rida["mark"] . ' ' . $rida["model"]); ?>"></td>
+      <td><img src="<?php echo $imgSrc; ?>" style="max-width: 50px; height: auto; object-fit: cover;" onerror="this.src='https://dummyimage.com/50x50/cccccc/000000.png&text=no+img';" alt="<?php echo htmlspecialchars($rida["mark"] . ' ' . $rida["model"]); ?>"></td>
       <td><?php echo $rida["mark"]; ?></td>
       <td><?php echo $rida["model"]; ?></td>
       <td><?php echo $rida["engine"]; ?></td>

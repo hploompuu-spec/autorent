@@ -24,7 +24,7 @@ if (!isset($_SESSION['tuvastamine'])) {
     ?>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Broneeringud</h2>
-        <a href="index.php" class="btn btn-secondary">Tagasi adminni pealehele</a>
+        <a href="<?php echo ($_SESSION['role'] === 'administraator') ? 'index.php' : '../index.php'; ?>" class="btn btn-secondary">Tagasi pealehele</a>
     </div>
     <?php
     if (!isset($_SESSION['tuvastamine'])) {
@@ -32,14 +32,14 @@ if (!isset($_SESSION['tuvastamine'])) {
     } else {
         if ($_SESSION['role'] === 'administraator') {
             $pealkiri = 'Kõik broneeringud';
-            $base_paring = "SELECT r.id, r.start_date, r.end_date, r.total_price, r.status, c.mark, c.model, u.email, u.first_name, u.last_name
+            $base_paring = "SELECT r.id, r.start_date, r.end_date, r.total_price, r.status, r.lisakindlustus, c.mark, c.model, u.email, u.first_name, u.last_name
                            FROM reservations r
                            JOIN cars c ON r.car_id = c.id
                            JOIN users u ON r.user_id = u.id";
         } else {
             $pealkiri = 'Minu broneeringud';
             $user_id = $_SESSION['user_id'];
-            $base_paring = "SELECT r.id, r.start_date, r.end_date, r.total_price, r.status, c.mark, c.model
+            $base_paring = "SELECT r.id, r.start_date, r.end_date, r.total_price, r.status, r.lisakindlustus, c.mark, c.model
                            FROM reservations r
                            JOIN cars c ON r.car_id = c.id
                            WHERE r.user_id = $user_id";
@@ -202,6 +202,7 @@ if (!isset($_SESSION['tuvastamine'])) {
                             <th>Alguskuupäev</th>
                             <th>Lõppkuupäev</th>
                             <th>Koguhind</th>
+                            <th>Lisakindlustus</th>
                             <th>Staatus</th>';
             if ($_SESSION['role'] === 'administraator') {
                 echo '<th>Kasutaja</th>';
@@ -217,6 +218,7 @@ if (!isset($_SESSION['tuvastamine'])) {
                         <td>' . $rida['start_date'] . '</td>
                         <td>' . $rida['end_date'] . '</td>
                         <td>' . $rida['total_price'] . ' €</td>
+                        <td>' . ($rida['lisakindlustus'] === 'jah' ? 'Jah' : 'Ei') . '</td>
                         <td>' . $rida['status'] . '</td>';
                 if ($_SESSION['role'] === 'administraator') {
                     echo '<td>' . $rida['first_name'] . ' ' . $rida['last_name'] . ' (' . $rida['email'] . ')</td>';
