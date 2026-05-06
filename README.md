@@ -1,86 +1,75 @@
+🏎️ Autorendi Veebirakendus
 
-# Autorendi veebirakendus
+PHP-põhine autorendi infosüsteem, mis on mugavalt pakendatud **Docker** konteineritesse.
 
-Dockeriga konteineriseeritud PHP-põhine autorendi infosüsteem.
+---
 
-## Kiirjuhend
+## 🚀 Kiirjuhend
 
-### Docker Compose'i kasutamine (soovitatav)
+### 🐳 Docker Compose'i kasutamine (Soovitatav)
 
 Konteinerite käivitamiseks sisesta käsureale:
 
 ```bash
 docker compose up -d
-```
+🔗 Juurdepääs linkidele:
+🌐 Veebirakendus: http://localhost/
 
-Juurdepääs rakendustele:
-- **Veebirakendus:** http://localhost/
-- **phpMyAdmin:** http://localhost:8080/
+🗄️ phpMyAdmin: http://localhost:8080/
 
----
+🔐 Autentimisandmed
+🛠️ phpMyAdmin:
+Kasutajanimi: root
 
-## Autentimisandmed
+Parool: docker123
 
-**phpMyAdmin:**
-- **Kasutajanimi:** `root`
-- **Parool:** `docker123`
+👤 Andmebaasi kasutaja:
+Kasutajanimi: hannes
 
-**Andmebaasi kasutaja:**
-- **Kasutajanimi:** `hannes`
-- **Parool:** `Passw0rd`
+Parool: Passw0rd
 
----
+🛠️ Teenused ja ⚙️ Funktsioonid
+Süsteemi komponendid:
+🐘 PHP / 🏛️ Apache: Veebiserver, mis töötab pordis 80.
 
-## Teenused ja Funktsioonid
+💾 MariaDB: Relatsiooniline andmebaas pordis 3306.
 
-### Süsteemi komponendid:
-* **PHP/Apache**: Veebiserver, mis töötab pordis 80.
-* **MariaDB**: Relatsiooniline andmebaas pordis 3306.
-* **phpMyAdmin**: Veebipõhine liides andmebaasi haldamiseks.
+🔧 phpMyAdmin: Veebipõhine liides andmebaasi haldamiseks.
 
-### Rakenduse võimalused:
-* Autode nimekiri koos sorteerimise ja lehekülgedeks jaotamisega.
-* Kasutajate registreerimine ja turvaline sisselogimine.
-* Autorendi broneerimissüsteem.
-* Administraatori töölaud andmete haldamiseks.
-* Kaasaegne ja kohanduv Bootstrap kasutajaliides.
+Rakenduse võimalused:
+🚗 Autode nimekiri: Koos sorteerimise ja lehekülgedeks jaotamisega.
 
----
+🔑 Kasutajahaldus: Registreerimine ja turvaline sisselogimine.
 
-## Projekti struktuur
+📅 Broneerimine: Autorendi broneerimissüsteem.
 
-```text
+📊 Admin paneel: Administraatori töölaud andmete haldamiseks.
+
+📱 Disain: Kaasaegne ja kohanduv Bootstrap kasutajaliides.
+
+📂 Projekti struktuur
+Plaintext
 car_rent/
-├── Dockerfile           # PHP/Apache konteineri definitsioon
-├── docker-compose.yml   # Mitme konteineri orkestreerimine
-├── .dockerignore        # Dockeri ehitusest välistatud failid
-├── config.php           # Andmebaasi konfiguratsioon
-├── index.php            # Avaleht koos autode nimekirjaga
-├── register.php         # Kasutaja registreerimine
-├── admin/               # Administraatori paneel
-├── db/                  # Andmebaasi tõmmised
-└── header.php           # Ühine päise mall
-```
+├── 🐳 Dockerfile           # PHP/Apache konteineri definitsioon
+├── 🐙 docker-compose.yml   # Mitme konteineri orkestreerimine
+├── 📄 .dockerignore        # Dockeri ehitusest välistatud failid
+├── ⚙️ config.php           # Andmebaasi konfiguratsioon
+├── 🏠 index.php            # Avaleht koos autode nimekirjaga
+├── 📝 register.php         # Kasutaja registreerimine
+├── 🛡️ admin/               # Administraatori paneel
+├── 💾 db/                  # Andmebaasi tõmmised
+└── 🧩 header.php           # Ühine päise mall
+💻 Arendus ja 🛑 Seiskamine
+🛠️ Arendustöö:
+Muuda PHP-faile otse VS Code-is — tänu bind mount ühendusele sünroonitakse muudatused automaatselt konteinerisse.
 
----
-
-## Arendus ja seiskamine
-
-**Arendustöö:**
-Muuda PHP-faile otse VS Code-is — tänu *bind mount* ühendusele sünroonitakse muudatused automaatselt konteinerisse.
-
-**Konteinerite peatamine:**
-```bash
+🔌 Konteinerite peatamine:
+Bash
 docker compose down
-```
+🧹 Andmete täielik eemaldamine:
+(Eemaldab ka andmebaasi sisu)
 
-**Andmete eemaldamine (andmebaasi algseadistamine):**
-```bash
+Bash
 docker compose down -v
-```
-
----
-
-## Litsents
-Õppeprojekt.
-```
+📜 Litsents
+🎓 Õppeprojekt.
