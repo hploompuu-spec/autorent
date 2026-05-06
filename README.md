@@ -1,11 +1,22 @@
----
-
-## 📜 Litsents
-🎓 **Õppeprojekt.**Siin on täielik, visuaalselt täiendatud **README.md** faili sisu, mis on valmis otse kopeerimiseks ja oma projekti juurkausta salvestamiseks.
-```markdown
-# 🏎️ Autorendi Veebirakendus
+# 🏎️ Autorendi veebirakendus
 
 PHP-põhine autorendi infosüsteem, mis on mugavalt pakendatud **Docker** konteineritesse.
+
+---
+
+## 🛠️ Teenused ja ⚙️ Funktsioonid
+
+### Süsteemi komponendid:
+*   **🐘 PHP / 🏛️ Apache**: Veebiserver, mis töötab pordis 80.
+*   **💾 MariaDB**: Relatsiooniline andmebaas pordis 3306.
+*   **🔧 phpMyAdmin**: Veebipõhine liides andmebaasi haldamiseks poordis 8080.
+
+### Rakenduse võimalused:
+*   **🚗 Autode nimekiri**: Koos sorteerimise ja lehekülgedeks jaotamisega.
+*   **🔑 Kasutajahaldus**: Registreerimine ja turvaline sisselogimine.
+*   **📅 Broneerimine**: Autorendi broneerimissüsteem.
+*   **📊 Admin paneel**: Administraatori töölaud sõidukite, kasutajate ja broneeringute haldamiseks.
+*   **📱 Disain**: Kaasaegne ja kohanduv Bootstrap kasutajaliides.
 
 ---
 
@@ -17,82 +28,68 @@ Konteinerite käivitamiseks sisesta käsureale:
 
 ```bash
 docker compose up -d
-🔗 Juurdepääs linkidele:
-🌐 Veebirakendus: http://localhost/
+```
 
-  
+### 🔗 Juurdepääs linkidele:
+*   **🌐 Veebirakendus:** [http://localhost/](http://localhost/)
+*   **🗄️ phpMyAdmin:** [http://localhost:8080/](http://localhost:8080/)
 
-🗄️ phpMyAdmin: http://localhost:8080/
+---
 
-  
+## 🔐 Autentimisandmed
 
-🔐 Autentimisandmed
-🛠️ phpMyAdmin:
-Kasutajanimi: root
+### 🛠️ phpMyAdmin:
+*   **Kasutajanimi:** `root`
+*   **Parool:** `docker123`
 
-  
+### 👤 Andmebaasi kasutaja:
+*   **Kasutajanimi:** `hannes`
+*   **Parool:** `Passw0rd`
 
-Parool: docker123
+---
 
-  
+## 📂 Projekti struktuur
 
-👤 Andmebaasi kasutaja:
-Kasutajanimi: hannes
-
-  
-
-Parool: Passw0rd
-
-  
-
-🛠️ Teenused ja ⚙️ Funktsioonid
-Süsteemi komponendid:
-🐘 PHP / 🏛️ Apache: Veebiserver, mis töötab pordis 80.  
-
-💾 MariaDB: Relatsiooniline andmebaas pordis 3306.  
-
-🔧 phpMyAdmin: Veebipõhine liides andmebaasi haldamiseks.  
-
-Rakenduse võimalused:
-🚗 Autode nimekiri: Koos sorteerimise ja lehekülgedeks jaotamisega.  
-
-🔑 Kasutajahaldus: Registreerimine ja turvaline sisselogimine.  
-
-📅 Broneerimine: Autorendi broneerimissüsteem.  
-
-📊 Admin paneel: Administraatori töölaud andmete haldamiseks.  
-
-📱 Disain: Kaasaegne ja kohanduv Bootstrap kasutajaliides.  
-
-📂 Projekti struktuur
-Plaintext
+```text
 car_rent/
-├── 🐳 Dockerfile           # PHP/Apache konteineri definitsioon
-├── 🐙 docker-compose.yml   # Mitme konteineri orkestreerimine
-├── 📄 .dockerignore        # Dockeri ehitusest välistatud failid[cite: 1]
-├── ⚙️ config.php           # Andmebaasi konfiguratsioon[cite: 1]
-├── 🏠 index.php            # Avaleht koos autode nimekirjaga[cite: 1]
-├── 📝 register.php         # Kasutaja registreerimine[cite: 1]
-├── 🛡️ admin/               # Administraatori paneel[cite: 1]
-├── 💾 db/                  # Andmebaasi tõmmised[cite: 1]
-└── 🧩 header.php           # Ühine päise mall[cite: 1]
-💻 Arendus ja 🛑 Seiskamine
-🛠️ Arendustöö:
-Muuda PHP-faile otse VS Code-is — tänu bind mount ühendusele sünroonitakse muudatused automaatselt konteinerisse[cite: 1].
+├── 🐳 Dockerfile               # PHP/Apache konteineri definitsioon
+├── 🐙 docker-compose.yml       # Mitme konteineri orkestreerimine
+├── 📄 .dockerignore            # Dockeri ehitusest välistatud failid
+├── 📄 .gitignore               # Git-i versioonihaldusest välistatud failid
+├── ⚙️ config.php               # Andmebaasi konfiguratsioon
+├── 🏠 index.php                # Avaleht koos autode nimekirjaga
+├── 📝 register.php             # Kasutaja registreerimine
+├── 🧩 header.php               # Ühine päise mall
+│
+└── 🛡️ admin/                   # Administraatori paneel
+    ├── 📊 index.php            # Admini töölaud
+    ├── 🔑 login.php            # Admini sisselogimine
+    ├── 🚪 logout.php           # Väljalogimise haldur
+    ├── 🛡️ admin_check.php      # Autentimise kontroll
+    ├── ➕ lisa.php             # Uue auto lisamine
+    ├── ✏️ muuda.php            # Auto andmete muutmine
+    ├── 🗑️ kustuta.php           # Auto kustutamine
+    ├── 👥 users.php            # Kasutajate haldamine
+    ├── 📜 my_rentals.php       # Rendiajaloo vaade
+    ├── 📅 muuda_broneering.php  # Broneeringu muutmine
+    └── ❌ kustuta_broneering.php # Broneeringu tühistamine
+```
 
-🔌 Konteinerite peatamine:
-Konteinerite töö lõpetamiseks kasuta käsku[cite: 1]:
+---
 
-Bash
+## 💻 Arendus ja 🛑 Seiskamine
+
+### 🛠️ Arendustöö:
+Muuda PHP-faile otse **VS Code**-is — tänu *bind mount* ühendusele sünroonitakse muudatused automaatselt konteinerisse.
+
+### 🔌 Konteinerite peatamine:
+Konteinerite töö lõpetamiseks kasuta käsku:
+```bash
 docker compose down
-🧹 Andmete täielik eemaldamine:
-(Tähelepanu: See eemaldab ka andmebaasi sisu ja mahud)
+```
 
-[cite: 1]
-
-Bash
+### 🧹 Andmete täielik eemaldamine:
+*(Tähelepanu: See eemaldab ka andmebaasi sisu ja mahud)*
+```bash
 docker compose down -v
-📜 Litsents
-🎓 Õppeprojekt.
-
-[cite: 1]
+```
