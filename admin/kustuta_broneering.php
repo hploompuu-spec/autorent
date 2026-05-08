@@ -11,6 +11,7 @@
     }
 
     if (!empty($_GET['delid'])) {
+        require_csrf_token($_GET['csrf_token'] ?? null);
         $id = (int)$_GET['delid'];
 
         // Check if user is admin or owns the reservation

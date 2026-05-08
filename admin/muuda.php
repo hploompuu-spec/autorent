@@ -17,6 +17,8 @@ if(isset($_GET["editid"])){
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["updateid"])){
+    require_csrf_token($_POST['csrf_token'] ?? null);
+
     $id = (int)$_POST["updateid"];
     $mark = mysqli_real_escape_string($yhendus, $_POST['mark']);
     $model = mysqli_real_escape_string($yhendus, $_POST['model']);
@@ -54,7 +56,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["updateid"])){
         
         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         
-        if (in_array($file_ext, $allowed_ext)) {
+        $mime = mime_content_type($file_tmp);
+        $allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        if (in_array($file_ext, $allowed_ext, true) && in_array($mime, $allowed_mimes, true) && $_FILES['image']['size'] <= 2 * 1024 * 1024) {
             $new_filename = 'car_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
             $upload_path = $upload_dir . $new_filename;
             
@@ -68,6 +73,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["updateid"])){
         }
     }
 
+    $image_path = mysqli_real_escape_string($yhendus, $image_path);
     $paring = "UPDATE cars SET mark = '$mark', model = '$model', engine = '$engine', fuel = '$fuel', price = $price, year = $year, transmission = '$transmission', seats = $seats, description = '$description', status = '$status', image = '$image_path' WHERE cars.id = $id";
 
     $valjund = mysqli_query($yhendus, $paring);
@@ -90,6 +96,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["updateid"])){
     <h2>Auto muutmine</h2>
     <?php if (!empty($rida)): ?>
     <form action="muuda.php" method="post" enctype="multipart/form-data">
+        <?php echo csrf_field(); ?>
         <div class="row g-4">
             <div class="col-sm-6">
                 <input type="hidden" name="updateid" value="<?= $rida['id']; ?>">

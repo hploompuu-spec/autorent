@@ -46,13 +46,17 @@ $reservation = mysqli_fetch_assoc($valjund);
 // Handle form submission
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
+    require_csrf_token($_POST['csrf_token'] ?? null);
+
+    $start_date = $_POST['start_date'] ?? '';
+    $end_date = $_POST['end_date'] ?? '';
     $lisakindlustus = $_POST['lisakindlustus'] ?? 'ei';
     $status = $_POST['status'] ?? $reservation['status'];
 
     // Validate dates
-    if (strtotime($end_date) <= strtotime($start_date)) {
+    if (!validate_date_string($start_date) || !validate_date_string($end_date)) {
+        $error = "Palun sisesta korrektsed kuupäevad!";
+    } elseif (strtotime($end_date) <= strtotime($start_date)) {
         $error = "Lõppkuupäev peab olema pärast alguskuupäeva!";
     } else {
         // Validate insurance value
@@ -112,6 +116,7 @@ include('../header.php');
         <p class="card-text">Hind: <?php echo $reservation['price']; ?>€/päev</p>
 
         <form method="post">
+            <?php echo csrf_field(); ?>
             <div class="mb-3">
                 <label for="start_date" class="form-label">Alguskuupäev</label>
                 <input type="date" class="form-control" id="start_date" name="start_date" value="<?php echo $reservation['start_date']; ?>" required>

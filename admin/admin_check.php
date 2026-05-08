@@ -1,10 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../security.php';
 
-if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') {
-  header('Location: login.php');
-  exit();
+if (empty($_SESSION['tuvastamine']) || ($_SESSION['role'] ?? '') !== 'administraator') {
+    header('Location: login.php');
+    exit();
 }
-?>

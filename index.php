@@ -49,7 +49,7 @@
     
     $sort_param_get = $_GET['sort'] ?? 'id_ASC';
     $order_by = isset($sort_options[$sort_param_get]) ? $sort_options[$sort_param_get] : 'id ASC';
-    $sort_param = "&sort=" . $sort_param_get;
+    $sort_param = "&sort=" . urlencode($sort_param_get);
 
     // Get total count
     $count_paring = "SELECT COUNT(*) as total FROM cars";
@@ -67,15 +67,15 @@
 ?>
     <div class="col">
         <div class="card">
-        <img src="https://loremflickr.com/400/250/<?php echo str_replace(" ","", $rida["mark"]); ?>" class="card-img-top" alt="<?php echo $rida["mark"]; ?>">
+        <img src="https://loremflickr.com/400/250/<?php echo rawurlencode(str_replace(' ', '', $rida["mark"])); ?>" class="card-img-top" alt="<?php echo e($rida["mark"]); ?>">
         <div class="card-body">
-            <h5 class="card-title"><?php echo $rida["mark"]; ?> <?php echo $rida["model"]; ?></h5>
+            <h5 class="card-title"><?php echo e($rida["mark"]); ?> <?php echo e($rida["model"]); ?></h5>
             <p class="card-text">
-                Mootor: <?php echo $rida["engine"]; ?> <br>
-                Kütus: <?php echo $rida["fuel"]; ?><br>
-                Hind: <?php echo $rida["price"]; ?>€/päev<br>
+                Mootor: <?php echo e($rida["engine"]); ?> <br>
+                Kütus: <?php echo e($rida["fuel"]); ?><br>
+                Hind: <?php echo e($rida["price"]); ?>€/päev<br>
             </p>
-            <a href="single_car.php?id=<?php echo $rida["id"]; ?>" class="btn btn-dark w-100">Rendi</a>
+            <a href="single_car.php?id=<?php echo (int)$rida["id"]; ?>" class="btn btn-dark w-100">Rendi</a>
         </div>
         </div>
     </div>

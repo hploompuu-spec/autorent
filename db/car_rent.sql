@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Loomise aeg: Mai 06, 2026 kell 07:08 PL
+-- Loomise aeg: Mai 08, 2026 kell 06:34 PL
 -- Serveri versioon: 11.8.6-MariaDB-ubu2404
 -- PHP versioon: 8.3.30
 
@@ -1046,7 +1046,8 @@ INSERT INTO `cars` (`id`, `mark`, `model`, `engine`, `fuel`, `price`, `image`, `
 (998, 'Volvo', 'S40', 'Rotary', 'elekter', 129, 'http://dummyimage.com/183x179.png/cc0000/ffffff', '1994', 'manuaalne', 8, 'adipiscing elit proin risus praesent lectus vestibulum quam', 'hoolduses'),
 (999, 'Jeep', 'Wrangler', 'Rotary', 'diisel', 115, 'http://dummyimage.com/179x167.png/cc0000/ffffff', '2007', 'manuaalne', 4, 'a libero nam dui proin leo odio porttitor', 'vaba'),
 (1000, 'Ford', 'Taurus', 'Diesel', 'elekter', 59, 'http://dummyimage.com/236x231.png/ff4444/ffffff', '1969', 'poolautomaat', 8, 'eu interdum eu tincidunt in leo maecenas pulvinar lobortis', 'broneeritud'),
-(1005, 'Audi', 'A8', 'V8', 'bensiin', 123, '', '2000', 'automaat', 5, 'test', 'vaba');
+(1005, 'Audi', 'A8', 'V8', 'bensiin', 123, '', '2000', 'automaat', 5, 'test', 'vaba'),
+(1006, 'Acura', 'Impala', 'V8', 'bensiin', 235, 'http://dummyimage.com/200x150/cccccc/000000.png&text=no+img', '1981', 'manuaalne', 4, 'rutrum neque aenean auctor gravida', 'vaba');
 
 -- --------------------------------------------------------
 
@@ -1125,19 +1126,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT tabelile `cars`
 --
 ALTER TABLE `cars`
-  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1006;
+  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1007;
 
 --
 -- AUTO_INCREMENT tabelile `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT tabelile `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Tõmmistatud tabelite piirangud

@@ -8,6 +8,8 @@ if (!is_dir($upload_dir)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+    require_csrf_token($_POST['csrf_token'] ?? null);
+
     $mark = mysqli_real_escape_string($yhendus, $_POST['mark']);
     $model = mysqli_real_escape_string($yhendus, $_POST['model']);
     $engine = mysqli_real_escape_string($yhendus, $_POST['engine']);
@@ -44,7 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
         // Allowed image extensions
         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         
-        if (in_array($file_ext, $allowed_ext)) {
+        $mime = mime_content_type($file_tmp);
+        $allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        if (in_array($file_ext, $allowed_ext, true) && in_array($mime, $allowed_mimes, true) && $_FILES['image']['size'] <= 2 * 1024 * 1024) {
             // Generate unique filename
             $new_filename = 'car_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
             $upload_path = $upload_dir . $new_filename;
@@ -75,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
 <div class="container">
     <h2>Auto lisamine</h2>
     <form action="lisa.php" method="post" enctype="multipart/form-data">
+        <?php echo csrf_field(); ?>
         <div class="row g-4">
             <div class="col-sm-6">
                 <label for="mark" class="form-label">Mark</label>

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../security.php';
 
 if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') {
   header('Location: login.php');
@@ -33,19 +33,22 @@ if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') 
     // Build WHERE clause for search
     $search_param = "";
     if (!empty($_GET["otsi"])) {
-        $otsing = $_GET["otsi"];
+        $otsing = mysqli_real_escape_string($yhendus, $_GET["otsi"]);
         $paring .= " WHERE mark LIKE '%".$otsing."%'";
         $search_param = "&otsi=" . urlencode($otsing);
     }
     
     // Handle sorting
     $sort_column = isset($_GET['sort']) ? $_GET['sort'] : 'id';
-    $sort_direction = isset($_GET['direction']) ? $_GET['direction'] : 'ASC';
+    $sort_direction = isset($_GET['direction']) ? strtoupper($_GET['direction']) : 'ASC';
     
     // Validate sort column to prevent SQL injection
     $allowed_columns = ['id', 'mark', 'model', 'engine', 'fuel', 'year', 'transmission', 'seats', 'status', 'price'];
     if (!in_array($sort_column, $allowed_columns)) {
         $sort_column = 'id';
+    }
+    if (!in_array($sort_direction, ['ASC', 'DESC'], true)) {
+        $sort_direction = 'ASC';
     }
     
     // Toggle direction if same column is clicked
@@ -126,19 +129,19 @@ if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') 
             }
     ?>
     <tr>
-      <th scope="row"><?php echo $rida["id"]; ?></th>
-      <td><img src="<?php echo $imgSrc; ?>" style="max-width: 50px; height: auto; object-fit: cover;" onerror="this.src='https://dummyimage.com/50x50/cccccc/000000.png&text=no+img';" alt="<?php echo htmlspecialchars($rida["mark"] . ' ' . $rida["model"]); ?>"></td>
-      <td><?php echo $rida["mark"]; ?></td>
-      <td><?php echo $rida["model"]; ?></td>
-      <td><?php echo $rida["engine"]; ?></td>
-      <td><?php echo $rida["fuel"]; ?></td>
-      <td><?php echo $rida["year"]; ?></td>
-      <td><?php echo $rida["transmission"]; ?></td>
-      <td><?php echo $rida["seats"]; ?></td>
-      <td><?php echo $rida["description"]; ?></td>
-      <td><?php echo $rida["status"]; ?></td>
-      <td><?php echo $rida["price"]; ?></td>
-      <td><a href="kustuta.php?delid=<?= $rida["id"]; ?>" class="btn btn-danger">Kustuta</a></td>
+      <th scope="row"><?php echo (int)$rida["id"]; ?></th>
+      <td><img src="<?php echo e($imgSrc); ?>" style="max-width: 50px; height: auto; object-fit: cover;" onerror="this.src='https://dummyimage.com/50x50/cccccc/000000.png&text=no+img';" alt="<?php echo e($rida["mark"] . ' ' . $rida["model"]); ?>"></td>
+      <td><?php echo e($rida["mark"]); ?></td>
+      <td><?php echo e($rida["model"]); ?></td>
+      <td><?php echo e($rida["engine"]); ?></td>
+      <td><?php echo e($rida["fuel"]); ?></td>
+      <td><?php echo e($rida["year"]); ?></td>
+      <td><?php echo e($rida["transmission"]); ?></td>
+      <td><?php echo e($rida["seats"]); ?></td>
+      <td><?php echo e($rida["description"]); ?></td>
+      <td><?php echo e($rida["status"]); ?></td>
+      <td><?php echo e($rida["price"]); ?></td>
+      <td><a href="kustuta.php?delid=<?= (int)$rida["id"]; ?>&<?= csrf_query(); ?>" class="btn btn-danger">Kustuta</a></td>
       <td><a href="muuda.php?editid=<?= $rida["id"]; ?>" class="btn btn-warning">Muuda</a></td>
     </tr>
 

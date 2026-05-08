@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../security.php';
 
 if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') {
   header('Location: login.php');
@@ -19,6 +19,7 @@ if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') 
     <?php
     // Handle user deletion
     if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
+        require_csrf_token($_GET['csrf_token'] ?? null);
         $user_id = (int)$_GET['delete'];
 
         // Don't allow deleting yourself
@@ -47,11 +48,15 @@ if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') 
 
     // Handle user update
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
+        require_csrf_token($_POST['csrf_token'] ?? null);
         $user_id = (int)$_POST['user_id'];
         $first_name = mysqli_real_escape_string($yhendus, $_POST['first_name']);
         $last_name = mysqli_real_escape_string($yhendus, $_POST['last_name']);
         $email = mysqli_real_escape_string($yhendus, $_POST['email']);
         $role = mysqli_real_escape_string($yhendus, $_POST['role']);
+        if (!in_array($role, ['kasutaja', 'administraator'], true)) {
+            $role = 'kasutaja';
+        }
 
         $update_paring = "UPDATE users SET first_name = '$first_name', last_name = '$last_name', email = '$email', role = '$role' WHERE id = $user_id";
         $result = mysqli_query($yhendus, $update_paring);
@@ -97,11 +102,11 @@ if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') 
                     <td><?php echo htmlspecialchars($user['role']); ?></td>
                     <td><?php echo $user['created_at']; ?></td>
                     <td>
-                        <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['first_name']); ?>', '<?php echo htmlspecialchars($user['last_name']); ?>', '<?php echo htmlspecialchars($user['email']); ?>', '<?php echo htmlspecialchars($user['role']); ?>')">
+                        <button class="btn btn-sm btn-warning" onclick='editUser(<?php echo (int)$user['id']; ?>, <?php echo json_encode($user['first_name']); ?>, <?php echo json_encode($user['last_name']); ?>, <?php echo json_encode($user['email']); ?>, <?php echo json_encode($user['role']); ?>)'>
                             Muuda
                         </button>
                         <?php if ($user['id'] !== $_SESSION['user_id']): ?>
-                        <a href="?delete=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Kas oled kindel, et soovid kustutada kasutaja <?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>?')">
+                        <a href="?delete=<?php echo (int)$user['id']; ?>&<?php echo csrf_query(); ?>" class="btn btn-sm btn-danger" onclick="return confirm('Kas oled kindel, et soovid kustutada kasutaja <?php echo e($user['first_name'] . ' ' . $user['last_name']); ?>?')">
                             Kustuta
                         </a>
                         <?php endif; ?>
@@ -122,6 +127,7 @@ if (!isset($_SESSION['tuvastamine']) || $_SESSION['role'] !== 'administraator') 
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post">
+                <?php echo csrf_field(); ?>
                 <div class="modal-body">
                     <input type="hidden" name="user_id" id="edit_user_id">
                     <div class="mb-3">

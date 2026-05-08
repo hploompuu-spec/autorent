@@ -1,8 +1,4 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-?>
+<?php require_once __DIR__ . '/security.php'; ?>
 <!doctype html>
 <html lang="et">
   <head>
@@ -16,7 +12,6 @@ if (session_status() === PHP_SESSION_NONE) {
       <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
   <div class="container">
     <?php
-        $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
         $isAdminUser = !empty($_SESSION['role']) && $_SESSION['role'] === 'administraator';
         $showAdminNav = $isAdminUser;
         $reservationsLabel = 'Broneeringud';
@@ -42,7 +37,7 @@ if (session_status() === PHP_SESSION_NONE) {
         <?php endif; ?>
         <?php if (!empty($_SESSION['tuvastamine'])): ?>
         <li class="nav-item">
-          <a class="nav-link" href="/admin/my_rentals.php"><?php echo $reservationsLabel; ?></a>
+          <a class="nav-link" href="/admin/my_rentals.php"><?php echo e($reservationsLabel); ?></a>
         </li>
         <?php endif; ?>
 

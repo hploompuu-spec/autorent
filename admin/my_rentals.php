@@ -56,9 +56,11 @@ if (!isset($_SESSION['tuvastamine'])) {
         // Add filter conditions
         if (!empty($_GET['car_filter'])) {
             $car_filter = explode('|', $_GET['car_filter']);
-            $mark = mysqli_real_escape_string($yhendus, $car_filter[0]);
-            $model = mysqli_real_escape_string($yhendus, $car_filter[1]);
-            $where_conditions[] = "(c.mark = '$mark' AND c.model = '$model')";
+            if (count($car_filter) === 2) {
+                $mark = mysqli_real_escape_string($yhendus, $car_filter[0]);
+                $model = mysqli_real_escape_string($yhendus, $car_filter[1]);
+                $where_conditions[] = "(c.mark = '$mark' AND c.model = '$model')";
+            }
         }
         if (!empty($_GET['status_filter'])) {
             $status = mysqli_real_escape_string($yhendus, $_GET['status_filter']);
@@ -128,7 +130,7 @@ if (!isset($_SESSION['tuvastamine'])) {
         while ($car = mysqli_fetch_assoc($cars_result)) {
             $car_value = $car['mark'] . '|' . $car['model'];
             $selected = (!empty($_GET['car_filter']) && $_GET['car_filter'] === $car_value) ? 'selected' : '';
-            echo '<option value="' . $car_value . '" ' . $selected . '>' . $car['mark'] . ' ' . $car['model'] . '</option>';
+            echo '<option value="' . e($car_value) . '" ' . $selected . '>' . e($car['mark'] . ' ' . $car['model']) . '</option>';
         }
         
         echo '        </select>
@@ -178,7 +180,7 @@ if (!isset($_SESSION['tuvastamine'])) {
             
             while ($user = mysqli_fetch_assoc($users_result)) {
                 $selected = (!empty($_GET['user_filter']) && $_GET['user_filter'] === $user['id']) ? 'selected' : '';
-                echo '<option value="' . $user['id'] . '" ' . $selected . '>' . $user['first_name'] . ' ' . $user['last_name'] . ' (' . $user['email'] . ')</option>';
+                echo '<option value="' . (int)$user['id'] . '" ' . $selected . '>' . e($user['first_name'] . ' ' . $user['last_name'] . ' (' . $user['email'] . ')') . '</option>';
             }
             
             echo '        </select>
@@ -225,7 +227,7 @@ if (!isset($_SESSION['tuvastamine'])) {
                 }
                 echo '      <td>
                             <a href="muuda_broneering.php?id=' . $rida['id'] . '" class="btn btn-warning btn-sm">Muuda</a>
-                            <a href="kustuta_broneering.php?delid=' . $rida['id'] . '" class="btn btn-danger btn-sm" onclick="return confirm(\'Kas oled kindel?\');">Kustuta</a>
+                            <a href="kustuta_broneering.php?delid=' . (int)$rida['id'] . '&' . csrf_query() . '" class="btn btn-danger btn-sm" onclick="return confirm(\'Kas oled kindel?\');">Kustuta</a>
                         </td>
                     </tr>';
             }
